@@ -4,12 +4,12 @@ import ow from 'ow/dist';
 import Piscina from 'piscina';
 
 export const jobPool = new Piscina({
-    'filename': new URL('./job.js', import.meta.url).href,
-    'maxQueue': 'auto',
-    'resourceLimits': {
-        'stackSizeMb': 6,
-        'codeRangeSizeMb': 10,
-    }
+    filename: new URL('./job.js', import.meta.url).href,
+    maxQueue: 'auto',
+    resourceLimits: {
+        stackSizeMb: 6,
+        codeRangeSizeMb: 10,
+    },
 });
 
 /**
@@ -31,6 +31,14 @@ export async function receiverInit(): Promise<void> {
                 );
 
                 console.log(`Received download request: ${detail.identifier}`);
+
+                jobPool.run({
+                    identifier: detail.identifier,
+                    audioUrl: detail.audioUrl,
+                    videoUrl: detail.videoUrl,
+                });
+
+                console.log(`Started job: ${detail.identifier}`);
             }
         } catch {
             console.error(`Invalid message: ${JSON.stringify(detail)}`);
