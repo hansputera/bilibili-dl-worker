@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {google} from 'googleapis';
+import {cwd} from 'node:process';
 
 /**
  * @class GAPI
@@ -14,8 +15,8 @@ export class GAPI {
      */
     constructor() {
         this.credentialsFilePath = path.resolve(
-            new URL(import.meta.url).pathname,
-            '../google_credentials.json',
+            cwd(),
+            'google_credentials.json',
         );
         if (!fs.existsSync(this.credentialsFilePath))
             throw new Error(
