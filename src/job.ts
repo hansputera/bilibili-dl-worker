@@ -57,6 +57,8 @@ export default async function (args: DownloadArgs): Promise<
             },
         );
 
+        ffmpegStream.on('error', reject);
+
         ffmpegStream.on('exit', (code) => {
             if (code === 0)
                 resolve({
