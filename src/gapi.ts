@@ -40,7 +40,7 @@ export class GAPI {
         if (contents.err) throw new Error(contents.err);
 
         // eslint-disable-next-line camelcase
-        const {client_id, client_secret, redirect_uris} = contents;
+        const {client_id, client_secret, redirect_uris} = contents.installed;
         this.client = new google.auth.OAuth2(
             client_id,
             client_secret,
