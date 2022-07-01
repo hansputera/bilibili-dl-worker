@@ -35,4 +35,8 @@ app.use(
     }),
 );
 
+app.all('/', (_, res) => {
+    return res.status(201).send('OK!');
+});
+
 app.listen(parseInt(process.env.PORT!) || 3000);
