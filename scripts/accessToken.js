@@ -3,6 +3,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {cwd} from 'node:process';
 import {createInterface} from 'node:readline';
+import {google} from 'googleapis';
 
 if (!fs.existsSync(path.resolve(cwd(), 'google_credentials.json'))) {
     console.error('google_credentials.json not found');
@@ -32,7 +33,7 @@ const generatedAuthUrl = oAuth2Client.generateAuthUrl({
     ],
 });
 
-console.log('Visit this url:', generatedAuthUrl);
+console.log('Visit this url:', generatedAuthUrl, '\n');
 const rl = createInterface({
     input: process.stdin,
     output: process.stdout,
