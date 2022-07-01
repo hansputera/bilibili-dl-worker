@@ -4,6 +4,7 @@ import {App as TinyHttpApp} from '@tinyhttp/app';
 import {logger} from '@tinyhttp/logger';
 import {cors} from '@tinyhttp/cors';
 import {rateLimit} from '@tinyhttp/rate-limit';
+import {apiApp} from './api/index.js';
 
 const app = new TinyHttpApp({
     noMatchHandler: (_, res) => {
@@ -38,5 +39,7 @@ app.use(
 app.all('/', (_, res) => {
     return res.status(201).send('OK!');
 });
+
+app.route('/api').use(apiApp);
 
 app.listen(parseInt(process.env.PORT!) || 3000);
