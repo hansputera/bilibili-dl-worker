@@ -60,6 +60,7 @@ export default async function (args: DownloadArgs): Promise<
         ffmpegStream.on('error', reject);
 
         ffmpegStream.on('exit', (code) => {
+            // TODO: upload file to gdrive.
             if (code === 0)
                 resolve({
                     audioUrl: args.audioUrl,
