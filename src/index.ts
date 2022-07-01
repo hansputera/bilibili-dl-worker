@@ -3,6 +3,7 @@ import 'dotenv/config';
 import {App as TinyHttpApp} from '@tinyhttp/app';
 import {logger} from '@tinyhttp/logger';
 import {cors} from '@tinyhttp/cors';
+import {rateLimit} from '@tinyhttp/rate-limit';
 
 const app = new TinyHttpApp({
     noMatchHandler: (_, res) => {
@@ -26,6 +27,11 @@ app.use(
     cors({
         origin: '*',
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    }),
+    rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        max: 100, // limit each IP to 100 requests per windowMs
+        message: 'Too many requests from this IP, please try again later.',
     }),
 );
 
