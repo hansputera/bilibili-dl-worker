@@ -18,7 +18,7 @@ export const jobPool = new Piscina({
  */
 export async function receiverInit(): Promise<void> {
     const redis = getRedis();
-    redis.on('message', (chan: string, detail: DownloadArgs) => {
+    redis.on('message', async (chan: string, detail: DownloadArgs) => {
         try {
             if (chan === 'download') {
                 ow(
@@ -30,13 +30,38 @@ export async function receiverInit(): Promise<void> {
                     }),
                 );
 
-                console.log(`Received download request: ${detail.identifier}`);
+                const rd = await redis.get(detail.identifier);
+                if (rd && ['done', 'wait'].includes(JSON.parse(rd).status)) {
+                    return;
+                }
 
-                jobPool.run({
+                console.log(`Received download request: ${detail.identifier}`);
+                redis.set(
+                    detail.identifier,
+                    JSON.stringify({
+                        status: 'wait',
+                        audioUrl: detail.audioUrl,
+                        videoUrl: detail.videoUrl,
+                    }),
+                );
+
+                const data = await jobPool.run({
                     identifier: detail.identifier,
                     audioUrl: detail.audioUrl,
                     videoUrl: detail.videoUrl,
                 });
+
+                if (!data) redis.del(detail.identifier);
+                else
+                    redis.set(
+                        detail.identifier,
+                        JSON.stringify({
+                            status: 'done',
+                            audioUrl: detail.audioUrl,
+                            videoUrl: detail.videoUrl,
+                            data,
+                        }),
+                    );
 
                 console.log(`Started job: ${detail.identifier}`);
             }
