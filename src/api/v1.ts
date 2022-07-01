@@ -1,4 +1,6 @@
 import {App} from '@tinyhttp/app';
+import {readdirSync} from 'node:fs';
+import {tmpdir} from 'node:os';
 
 export const v1App = new App({
     noMatchHandler: (_, res) => {
@@ -15,3 +17,8 @@ export const v1App = new App({
 });
 
 v1App.get('/', (_, res) => res.status(200).send('Hello World'));
+v1App.get('/tmp_videos', (_, res) => {
+    return res
+        .status(200)
+        .json(readdirSync(tmpdir()).filter((fl) => fl.endsWith('.mp4')));
+});
