@@ -48,14 +48,7 @@ export class GAPI {
             redirect_uris[0],
         );
 
-        if (
-            !fs.existsSync(
-                path.resolve(
-                    new URL(import.meta.url).pathname,
-                    '../google_tokens.json',
-                ),
-            )
-        )
+        if (!fs.existsSync(path.resolve(cwd(), 'google_tokens.json')))
             throw new Error('Tokens file not found');
 
         const tokens = JSON.parse(
