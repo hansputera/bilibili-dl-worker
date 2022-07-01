@@ -2,6 +2,7 @@ import 'dotenv/config';
 
 import {App as TinyHttpApp} from '@tinyhttp/app';
 import {logger} from '@tinyhttp/logger';
+import {cors} from '@tinyhttp/cors';
 
 const app = new TinyHttpApp({
     noMatchHandler: (_, res) => {
@@ -21,6 +22,10 @@ app.use(
         timestamp: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         emoji: true,
+    }),
+    cors({
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
     }),
 );
 
