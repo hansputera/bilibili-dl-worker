@@ -7,6 +7,7 @@ import {google} from 'googleapis';
  */
 export class GAPI {
     private credentialsFilePath!: string;
+    public client = new google.auth.OAuth2();
 
     /**
      * @constructor
@@ -24,7 +25,7 @@ export class GAPI {
 
     /**
      * Initialize the Google API client.
-     * @return {Promise<google.auth.OAuth2>}
+     * @return {Promise<void>}
      */
     async init() {
         const contents = JSON.parse(
@@ -39,7 +40,7 @@ export class GAPI {
 
         // eslint-disable-next-line camelcase
         const {client_id, client_secret, redirect_uris} = contents;
-        const oauth2Client = new google.auth.OAuth2(
+        this.client = new google.auth.OAuth2(
             client_id,
             client_secret,
             // eslint-disable-next-line camelcase
@@ -69,8 +70,7 @@ export class GAPI {
         );
 
         if (tokens.err) throw new Error(tokens.err);
-        oauth2Client.setCredentials(tokens);
-
-        return oauth2Client;
+        this.client.setCredentials(tokens);
+        return;
     }
 }
