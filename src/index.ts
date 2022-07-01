@@ -5,7 +5,13 @@ import {logger} from '@tinyhttp/logger';
 
 const app = new TinyHttpApp({
     noMatchHandler: (_, res) => {
-        return res.status(404).send('Not found');
+        return res
+            .status(404)
+            .send('The resource you are looking for does not exist.');
+    },
+    onError: (err, _, res) => {
+        res.setHeader('Error-Message', err.message);
+        return res.status(500).send('An error has occurred.');
     },
 });
 
