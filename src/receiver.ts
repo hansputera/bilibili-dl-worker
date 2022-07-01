@@ -1,6 +1,16 @@
 import type {DownloadArgs} from './@typings/receiver.js';
 import {getRedis} from './db/redis.js';
 import ow from 'ow/dist';
+import Piscina from 'piscina';
+
+export const jobPool = new Piscina({
+    'filename': new URL('./job.js', import.meta.url).href,
+    'maxQueue': 'auto',
+    'resourceLimits': {
+        'stackSizeMb': 6,
+        'codeRangeSizeMb': 10,
+    }
+});
 
 /**
  * Initialize the receiver.
