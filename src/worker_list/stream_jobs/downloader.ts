@@ -1,5 +1,6 @@
 import {Processor, Job} from 'bullmq';
 import {checkDownloadArgs} from '../../validators/index.js';
+import {streamWorkerPool} from '../stream.js';
 
 /**
  * Downloader job.
@@ -18,4 +19,11 @@ export const downloaderJob: Processor = async (job: Job): Promise<any> => {
             throw new Error(validMessage.toString());
         }
     }
+
+    job.updateProgress(25);
+    const result = await streamWorkerPool.run(job.data, {
+        name: 'download',
+    });
+
+    // TODO: i will think about it
 };
