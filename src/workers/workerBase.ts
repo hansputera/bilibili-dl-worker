@@ -1,10 +1,11 @@
-import {Processor, Worker, WorkerOptions} from 'bullmq';
+import {Processor, Queue, Worker, WorkerOptions} from 'bullmq';
 
 /**
  * @class WorkerBase
  */
 export class WorkerBase extends Worker {
     public jobsHandle: Map<string, Processor> = new Map();
+    public queue!: Queue;
 
     /**
      * @param {string} name - The name of the worker.
@@ -13,9 +14,12 @@ export class WorkerBase extends Worker {
     constructor(name: string, opts?: WorkerOptions) {
         super(
             name,
-            async (job) => {
+            async (job, token) => {
                 if (this.jobsHandle.has(job.name.toLowerCase())) {
-                    return this.jobsHandle.get(job.name.toLowerCase())!(job);
+                    return this.jobsHandle.get(job.name.toLowerCase())!(
+                        job,
+                        token,
+                    );
                 }
             },
             opts,
