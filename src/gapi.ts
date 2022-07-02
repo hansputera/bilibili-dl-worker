@@ -16,7 +16,7 @@ export class GAPI {
     constructor() {
         this.credentialsFilePath = path.resolve(
             cwd(),
-            'google_credentials.json',
+            './google_credentials.json',
         );
         if (!fs.existsSync(this.credentialsFilePath))
             throw new Error(
@@ -53,13 +53,9 @@ export class GAPI {
 
         const tokens = JSON.parse(
             await fs.promises
-                .readFile(
-                    path.resolve(
-                        new URL(import.meta.url).pathname,
-                        '../google_tokens.json',
-                    ),
-                    {encoding: 'utf8'},
-                )
+                .readFile(path.resolve(cwd(), 'google_tokens.json'), {
+                    encoding: 'utf8',
+                })
                 .catch((err) => '{"err": "'.concat(err.message, '"}')),
         );
 
