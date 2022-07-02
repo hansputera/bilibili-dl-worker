@@ -1,3 +1,4 @@
+import {ValidationError} from 'fastest-validator';
 import {DownloadArgs} from '../@typings/receiver.js';
 import {validator} from './initial.js';
 
@@ -8,7 +9,7 @@ import {validator} from './initial.js';
  */
 export const checkDownloadArgs = <T extends DownloadArgs>(
     data: T,
-): string | undefined => {
+): ValidationError[] | string | undefined => {
     const result = validator.compile({
         identifier: {
             type: 'string',
@@ -24,5 +25,7 @@ export const checkDownloadArgs = <T extends DownloadArgs>(
         },
     })(data);
 
-    return typeof result === 'string' ? result : undefined;
+    return typeof result === 'boolean'
+        ? undefined
+        : (result as string | ValidationError[]);
 };
