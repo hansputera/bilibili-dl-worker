@@ -3,3 +3,4 @@ dist/
 .env
 google_credentials.json
 google_tokens.json
+aa.js
