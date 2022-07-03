@@ -4,3 +4,5 @@ dist/
 google_credentials.json
 google_tokens.json
 aa.js
+downloads/*.mp3
+downloads/*.mp4
