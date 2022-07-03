@@ -1,16 +1,16 @@
-import {ValidationError} from 'fastest-validator';
+import type {ValidationError} from 'fastest-validator';
 import {DownloadArgs} from '../@typings/receiver.js';
 import {validator} from './initial.js';
 
 /**
  * Validate the download arguments.
  * @param {T} data download args
- * @return {string | undefined}
+ * @return {Promise<ValidationError[] | string | undefined>}
  */
-export const checkDownloadArgs = <T extends DownloadArgs>(
+export const checkDownloadArgs = async <T extends DownloadArgs>(
     data: T,
-): ValidationError[] | string | undefined => {
-    const result = validator.compile({
+): Promise<ValidationError[] | string | undefined> => {
+    const result = await validator.compile({
         identifier: {
             type: 'string',
             optional: true,
@@ -25,7 +25,5 @@ export const checkDownloadArgs = <T extends DownloadArgs>(
         },
     })(data);
 
-    return typeof result === 'boolean'
-        ? undefined
-        : (result as string | ValidationError[]);
+    return typeof result === 'boolean' ? undefined : result;
 };
