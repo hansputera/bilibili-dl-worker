@@ -6,6 +6,8 @@ RUN mkdir -p /home/bilibili-dl-worker
 COPY . /home/bilibili-dl-worker
 WORKDIR /home/bilibili-dl-worker
 
+RUN npm i pnpm -g
+
 RUN pnpm install
 RUN pnpm run build
 
