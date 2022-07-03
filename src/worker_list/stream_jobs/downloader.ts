@@ -8,7 +8,7 @@ import {streamWorkerPool} from '../stream.js';
  * @return {Promise<any>}
  */
 export const downloaderJob: Processor = async (job: Job): Promise<any> => {
-    const validMessage = checkDownloadArgs(job.data);
+    const validMessage = await checkDownloadArgs(job.data);
     if (validMessage) {
         await job.log('Invalid download args: ' + validMessage.toString());
         if (Array.isArray(validMessage)) {
@@ -34,5 +34,9 @@ export const downloaderJob: Processor = async (job: Job): Promise<any> => {
             name: 'downloadWorker',
         });
 
-    return result;
+    return {
+        ...result,
+        identifier: job.data.identifier,
+        job: job.name,
+    };
 };
