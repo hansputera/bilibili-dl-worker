@@ -20,10 +20,19 @@ export const downloaderJob: Processor = async (job: Job): Promise<any> => {
         }
     }
 
-    job.updateProgress(25);
-    const result = await streamWorkerPool.run(job.data, {
-        name: 'download',
-    });
+    let result = await streamWorkerPool.run(
+        {
+            identifier: job.data.identifier,
+        },
+        {
+            name: 'checkFilesDownloadById',
+        },
+    );
 
-    // TODO: i will think about it
+    if (!result)
+        result = await streamWorkerPool.run(job.data, {
+            name: 'downloadWorker',
+        });
+
+    return result;
 };
