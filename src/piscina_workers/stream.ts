@@ -3,8 +3,9 @@ import got from 'got';
 import type {DownloadArgs} from '../@typings/receiver.js';
 import {createWriteStream} from 'fs';
 import {resolve} from 'node:path';
-import {readFile, stat, unlink} from 'node:fs/promises';
+import {stat, unlink} from 'node:fs/promises';
 import {cwd} from 'node:process';
+import {getCurrentAddress} from '../util.js';
 
 if (!Piscina.isWorkerThread)
     throw new Error('This file should only be run in a worker thread.');
@@ -12,18 +13,20 @@ if (!Piscina.isWorkerThread)
 /**
  * Downloader job (piscina worker).
  * @param {DownloadArgs} param0 - Download args.
+ * @return {Promise<{audio: string, video: string}>}
  */
 export const downloadWorker = async ({
     audioUrl,
     videoUrl,
     identifier,
-}: DownloadArgs) => {
+}: DownloadArgs): Promise<{audio: string; video: string}> => {
     return await new Promise(async (resolvePromise, reject) => {
         try {
             // 1 = audio complete.
             // 2 = video complete.
             let status = 0;
 
+            const address = await getCurrentAddress();
             const audioWriter = createWriteStream(
                 resolve(cwd(), 'downloads', `${identifier}_audio.mp3`),
                 {
@@ -42,24 +45,10 @@ export const downloadWorker = async ({
                     status = 1;
                 } else if (status !== 0 && status === 2) {
                     return resolvePromise({
-                        audio: (
-                            await readFile(
-                                resolve(
-                                    cwd(),
-                                    'downloads',
-                                    `${identifier}_audio.mp3`,
-                                ),
-                            )
-                        ).toJSON(),
-                        video: (
-                            await readFile(
-                                resolve(
-                                    cwd(),
-                                    'downloads',
-                                    `${identifier}_video.mp4`,
-                                ),
-                            )
-                        ).toJSON(),
+                        audio: new URL(`./${identifier}_audio.mp3`, address)
+                            .href,
+                        video: new URL(`./${identifier}_video.mp4`, address)
+                            .href,
                     });
                 }
             });
@@ -69,24 +58,10 @@ export const downloadWorker = async ({
                     status = 2;
                 } else if (status !== 0 && status === 1) {
                     return resolvePromise({
-                        audio: (
-                            await readFile(
-                                resolve(
-                                    cwd(),
-                                    'downloads',
-                                    `${identifier}_audio.mp3`,
-                                ),
-                            )
-                        ).toJSON(),
-                        video: (
-                            await readFile(
-                                resolve(
-                                    cwd(),
-                                    'downloads',
-                                    `${identifier}_video.mp4`,
-                                ),
-                            )
-                        ).toJSON(),
+                        audio: new URL(`./${identifier}_audio.mp3`, address)
+                            .href,
+                        video: new URL(`./${identifier}_video.mp4`, address)
+                            .href,
                     });
                 }
             });
@@ -115,7 +90,7 @@ export const downloadWorker = async ({
 /**
  * Check downloaded files by id.
  * @param {{identifier: string}} param0 - CheckFileDownloadById args.
- * @return {Promise<{audio: {type: "buffer", data: number[]}, video: {type: "Buffer", data: number[]}}>}
+ * @return {Promise<{audio: string, video: string}>}
  */
 export const checkFilesDownloadById = async ({
     identifier,
@@ -123,8 +98,8 @@ export const checkFilesDownloadById = async ({
     identifier: string;
 }): Promise<
     | {
-          audio: {type: 'Buffer'; data: number[]};
-          video: {type: 'Buffer'; data: number[]};
+          audio: string;
+          video: string;
       }
     | undefined
 > => {
@@ -143,17 +118,10 @@ export const checkFilesDownloadById = async ({
         statsAudio.size > 0 &&
         statsVideo.size > 0
     ) {
+        const address = await getCurrentAddress();
         return {
-            audio: (
-                await readFile(
-                    resolve(cwd(), 'downloads', `${identifier}_audio.mp3`),
-                )
-            ).toJSON(),
-            video: (
-                await readFile(
-                    resolve(cwd(), 'downloads', `${identifier}_video.mp4`),
-                )
-            ).toJSON(),
+            audio: new URL(`./${identifier}_audio.mp3`, address).href,
+            video: new URL(`./${identifier}_video.mp4`, address).href,
         };
     } else {
         return undefined;
