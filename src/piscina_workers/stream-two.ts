@@ -1,7 +1,7 @@
 import Piscina from 'piscina';
 import childProcess from 'node:child_process';
 import ffmpegStatic from 'ffmpeg-static';
-import {readFile} from 'node:fs/promises';
+import {stat} from 'node:fs/promises';
 import {Readable, Writable} from 'node:stream';
 import {cwd} from 'node:process';
 
@@ -14,13 +14,13 @@ if (!Piscina.isWorkerThread) {
 /**
  * Merge two audio and video files into a single file.
  * @param {MergeArgs} param0 - The arguments to merge the audio and video together.
- * @return {Promise<{ type: "Buffer", data: number[] }>} - The merged audio and video.
+ * @return {Promise<string>} - The merged audio and video.
  */
 export const mergeAudioAndVideo = async ({
     audio,
     video,
     identifier,
-}: MergeArgs): Promise<{type: 'Buffer'; data: number[]}> => {
+}: MergeArgs): Promise<string> => {
     audio = Buffer.from(audio);
     video = Buffer.from(video);
 
@@ -55,13 +55,7 @@ export const mergeAudioAndVideo = async ({
                 return;
             }
 
-            return resolve(
-                (
-                    await readFile(
-                        `${cwd()}/downloads/${identifier}_converted.mp4`,
-                    )
-                ).toJSON(),
-            );
+            return resolve(`${identifier}_converted.mp4`);
         });
 
         Readable.from(audio).pipe(ffmpeg.stdio[0]);
@@ -72,15 +66,18 @@ export const mergeAudioAndVideo = async ({
 /**
  * Check if the converted file is exists.
  * @param {{identifier: string}} param0 - The identifier of the video to download.
- * @return {Promise<{ type: "Buffer", data: number[] }>} - The downloaded video.
+ * @return {Promise<string>} - The downloaded video.
  */
 export const checkConvertedFile = async ({
     identifier,
 }: {
     identifier: string;
-}): Promise<{type: 'Buffer'; data: number[]} | undefined> => {
-    const file = await readFile(
+}): Promise<string | undefined> => {
+    const file = await stat(
         `${cwd()}/downloads/${identifier}_converted.mp4`,
     ).catch(() => undefined);
-    return file ? file.toJSON() : undefined;
+
+    if (file && file.size > 0 && file.isFile()) {
+        return `${identifier}_converted.mp4`;
+    } else return undefined;
 };
