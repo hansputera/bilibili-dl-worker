@@ -6,7 +6,7 @@ import {downloaderJob} from './stream_jobs/downloader.js';
 
 export const streamWorkerPool = new Piscina({
     filename: new URL('../piscina_workers/stream.js', import.meta.url).href,
-    maxQueue: 'auto',
+    maxQueue: 10,
 });
 
 export const streamWorker = async (manager: WorkerManager) => {
