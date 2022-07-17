@@ -1,5 +1,6 @@
 import Piscina from 'piscina';
 import got from 'got';
+import {baseURL as bilibiliBaseURL} from '@bilibili-dl/config/constants.js';
 import type {DownloadArgs} from '../@typings/receiver.js';
 import {createWriteStream} from 'fs';
 import {resolve} from 'node:path';
@@ -68,15 +69,15 @@ export const downloadWorker = async ({
 
             got.stream(audioUrl, {
                 headers: {
-                    Origin: 'https://www.bilibili.tv',
-                    Referer: 'https://www.bilibili.tv/en',
+                    Origin: bilibiliBaseURL,
+                    Referer: bilibiliBaseURL.concat('/en'),
                 },
             }).pipe(audioWriter);
 
             got.stream(videoUrl, {
                 headers: {
-                    Origin: 'https://www.bilibili.tv',
-                    Referer: 'https://www.bilibili.tv/en',
+                    Origin: bilibiliBaseURL,
+                    Referer: bilibiliBaseURL.concat('/en'),
                 },
             }).pipe(videoWriter);
         } catch {
