@@ -6,8 +6,12 @@ import got from 'got';
  */
 export const getCurrentAddress = async (): Promise<string> => {
     // is it running on heroku?
-    if (process.env.DYNO && process.env.HOME === '/app') {
-        return `https://${process.env.DOMAIN}.herokuapp.com`;
+    if (
+        process.env.DYNO &&
+        process.env.HEROKU_URL &&
+        process.env.HOME === '/home/bilibili-dl-worker'
+    ) {
+        return process.env.HEROKU_URL.slice(0, -1);
     }
 
     // is it running on railway?
