@@ -16,20 +16,12 @@ export const checkMergeArgs = async <T extends MergeArgs>(
             required: true,
         },
         audio: {
-            type: 'object',
+            type: 'url',
             required: true,
-            props: {
-                type: 'string',
-                data: 'array',
-            },
         },
         video: {
-            type: 'object',
+            type: 'url',
             required: true,
-            props: {
-                type: 'string',
-                data: 'array',
-            },
         },
     })(data);
 
