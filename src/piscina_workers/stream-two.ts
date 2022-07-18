@@ -1,9 +1,10 @@
 import Piscina from 'piscina';
+import got from 'got';
 import childProcess from 'node:child_process';
 import ffmpegStatic from 'ffmpeg-static';
 import {stat} from 'node:fs/promises';
-import {Readable, Writable} from 'node:stream';
 import {cwd} from 'node:process';
+import type {Writable} from 'node:stream';
 
 import type {MergeArgs} from '../@typings/workers.js';
 
@@ -21,9 +22,6 @@ export const mergeAudioAndVideo = async ({
     video,
     identifier,
 }: MergeArgs): Promise<string> => {
-    audio = Buffer.from(audio);
-    video = Buffer.from(video);
-
     return await new Promise(async (resolve, reject) => {
         const ffmpeg = childProcess.spawn(
             ffmpegStatic,
@@ -58,8 +56,8 @@ export const mergeAudioAndVideo = async ({
             return resolve(`${identifier}_converted.mp4`);
         });
 
-        Readable.from(audio).pipe(ffmpeg.stdio[0]);
-        Readable.from(video).pipe(ffmpeg.stdio.at(1) as Writable);
+        got.stream(audio).pipe(ffmpeg.stdio[0]);
+        got.stream(video).pipe(ffmpeg.stdio.at(1) as Writable);
     });
 };
 
