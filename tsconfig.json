@@ -1,0 +1,10 @@
+{
+    "extends": "@bilibili-dl/config/tsconfig.base.json",
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"],
+    "compilerOptions": {
+        "outDir": "./dist",
+        "allowSyntheticDefaultImports": true,
+        "noImplicitReturns": false
+    }
+}
