@@ -1,5 +1,5 @@
 export interface MergeArgs {
-    audio: Buffer;
-    video: Buffer;
+    audio: string;
+    video: string;
     identifier: string;
 }
